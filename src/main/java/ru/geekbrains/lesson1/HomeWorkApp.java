@@ -1,5 +1,7 @@
 package ru.geekbrains.lesson1;
 
+//Комментарий добавлен для создания PR т. к. ДЗ первого урока уже вошло в initial commit
+
 public class HomeWorkApp {
 
     public static void main(String[] args) {
