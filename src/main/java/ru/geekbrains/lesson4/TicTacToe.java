@@ -1,13 +1,15 @@
 package ru.geekbrains.lesson4;
 
 import java.util.InputMismatchException;
-import java.util.Random;
 import java.util.Scanner;
 
 public class TicTacToe {
 
     static final char EMPTY_CELL_SYMBOL = '-';
+    static final char PLAYER_SIGN = 'X';
+    static final char BOT_SIGN = 'O';
     static final int fieldSize = 3;
+    static final int maxDepth = 3;
 
     public static void start() {
 
@@ -19,7 +21,7 @@ public class TicTacToe {
             do {
                 doPlayerMove(field);
                 drawField(field);
-                if (isWin(field, 'X')) {
+                if (isWin(field, PLAYER_SIGN)) {
                     System.out.println("Congratulations!!! You are winner.");
                     break;
                 }
@@ -30,7 +32,7 @@ public class TicTacToe {
 
                 doBotMove(field);
                 drawField(field);
-                if (isWin(field, 'O')) {
+                if (isWin(field, BOT_SIGN)) {
                     System.out.println("Sorry!!! You are loser. :(");
                     break;
                 }
@@ -42,7 +44,6 @@ public class TicTacToe {
         } catch (InputMismatchException e) {
             System.out.println("exit");
         }
-
     }
 
     static boolean isDraw(char[][] field) {
@@ -93,26 +94,99 @@ public class TicTacToe {
     }
 
     static void doBotMove(char[][] field) {
-        Random random = new Random();
-
-        int v, h;
-
-        do {
-            v = random.nextInt(fieldSize);
-            h = random.nextInt(fieldSize);
-        } while (isNotEmptyCell(field, v, h));
-
-        field[v][h] = 'O';
+        int maxValue = -1;
+        int bestMoveV = 0;
+        int bestMoveH = 0;
+        //Iterate and evaluate possible moves
+        for (int i = 0; i < field.length; i++) {
+            for (int j = 0; j < field.length; j++) {
+                if (isEmptyCell(field, i, j)) {
+                    int value = evaluateMove(field, i, j, true, 0);
+                    if (moveIsBetter(value, maxValue)) {
+                        maxValue = value;
+                        bestMoveV = i;
+                        bestMoveH = j;
+                    }
+                }
+            }
+        }
+        field[bestMoveV][bestMoveH] =  BOT_SIGN;
     }
 
-    static void doPlayerMove(char[][] field) {
+    static int evaluateMove (char[][] field, int v, int h, boolean isBot, int depth) {
+        if (++depth > maxDepth) return 0;
+        field[v][h] = isBot ? BOT_SIGN : PLAYER_SIGN;
+        if (isDraw(field)) {
+            field[v][h] = EMPTY_CELL_SYMBOL;
+            return 0;
+        }
+        if (isWin(field, isBot ?  BOT_SIGN : PLAYER_SIGN)) {
+            field[v][h] = EMPTY_CELL_SYMBOL;
+            return 1;
+        }
+
+        //Best opposite move
+        int maxValueB = -1;
+        int bestMoveV = 0;
+        int bestMoveH = 0;
+        for (int i = 0; i < field.length; i++) {
+            for (int j = 0; j < field.length; j++) {
+                if (isEmptyCell(field, i, j)) {
+                    int value = evaluateMove(field, i, j, !isBot, depth);
+                    if (moveIsBetter(value, maxValueB)) {
+                        maxValueB = value;
+                        bestMoveV = i;
+                        bestMoveH = j;
+                    }
+                }
+            }
+        }
+        field[bestMoveV][bestMoveH] =  !isBot ?  BOT_SIGN : PLAYER_SIGN;
+        //Best opposite move
+
+        if (isWin(field, !isBot ?  BOT_SIGN : PLAYER_SIGN)) {
+            field[v][h] = EMPTY_CELL_SYMBOL;
+            field[bestMoveV][bestMoveH] = EMPTY_CELL_SYMBOL;
+            return -1;
+        }
+        int maxValue = -1;
+        for (int i = 0; i < field.length; i++) {
+            for (int j = 0; j < field.length; j++) {
+                if (isEmptyCell(field, i, j)) {
+                    int value = evaluateMove(field, i, j, isBot, depth);
+                    if (moveIsBetter(value, maxValue)) maxValue = value;
+                }
+            }
+        }
+        if (maxValue > 0) {
+            field[v][h] = EMPTY_CELL_SYMBOL;
+            field[bestMoveV][bestMoveH] = EMPTY_CELL_SYMBOL;
+            return maxValue + 1;
+        }
+        if (maxValue < 0) {
+            field[v][h] = EMPTY_CELL_SYMBOL;
+            field[bestMoveV][bestMoveH] = EMPTY_CELL_SYMBOL;
+            return maxValue - 1;
+        }
+        field[v][h] = EMPTY_CELL_SYMBOL;
+        field[bestMoveV][bestMoveH] = EMPTY_CELL_SYMBOL;
+        return 0;
+    }
+
+    //Compare moves by value (value here is a tricky thing so simple mathematical comparison is not working)
+    static boolean moveIsBetter(int value, int maxValue) {
+        if ((value > 0 && maxValue > 0) || (value < 0 && maxValue < 0)) return value <= maxValue;
+        return value > maxValue;
+    }
+
+     static void doPlayerMove(char[][] field) {
         int v, h;
         do {
             v = getCoordinate(field, 'v');
             h = getCoordinate(field, 'h');
         } while (isNotEmptyCell(field, v, h));
 
-        field[v][h] = 'X';
+        field[v][h] = PLAYER_SIGN;
     }
 
     static int getCoordinate(char[][] field, char coordinateName) {
@@ -128,9 +202,6 @@ public class TicTacToe {
     }
 
     static char[][] createField() {
-        //Scanner scanner = new Scanner(System.in);
-        //System.out.print("Please enter field size...");
-        //fieldSize = scanner.nextInt();
         char[][] field = new char[fieldSize][fieldSize];
         for (int i = 0; i < field.length; i++) {
             for (int j = 0; j < field.length; j++) {
@@ -141,9 +212,9 @@ public class TicTacToe {
     }
 
     static void drawField(char[][] field) {
-        for (int i = 0; i < field.length; i++) {
+        for (char[] chars : field) {
             for (int j = 0; j < field.length; j++) {
-                System.out.print(field[i][j]);
+                System.out.print(chars[j]);
                 System.out.print(" ");
             }
             System.out.println();
