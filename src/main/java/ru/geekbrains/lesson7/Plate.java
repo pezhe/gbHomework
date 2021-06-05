@@ -2,12 +2,25 @@ package ru.geekbrains.lesson7;
 
 public class Plate {
     private int food;
-    public Plate(int food) {
-        this.food = food;
+    private final int capacity;
+
+    public Plate(int capacity, int food) {
+        this.capacity = capacity;
+        this.food = Math.min(food, capacity);
     }
-    public void decreaseFood(int n) {
-        food -= n;
+
+    public boolean decreaseFood(int n) {
+        if (n <= food) {
+            food -= n;
+            return true;
+        }
+        else return false;
     }
+
+    public void addFood(int n) {
+        food = Math.min(food + n, capacity);
+    }
+
     public void info() {
         System.out.println("plate: " + food);
     }
