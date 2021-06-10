@@ -2,14 +2,12 @@ package ru.geekbrains.lesson8;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class CalculatorFrame extends JFrame {
     private JTextField inputArea;
 
     public CalculatorFrame() {
-        setTitle("Calculator v1.0");
+        setTitle("Calculator v2.0");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         setBounds(100, 100, 300, 500);
@@ -36,27 +34,53 @@ public class CalculatorFrame extends JFrame {
 
     private JPanel createBottomPanel() {
         JPanel bottom = new JPanel();
-        bottom.setLayout(new GridLayout(5, 3));
-
-        DigitButtonActionListener digitButtonActionListener = new DigitButtonActionListener(inputArea);
+        bottom.setLayout(new GridLayout(5, 4));
 
         for (int i = 0; i < 10; i++) {
             JButton btn = new JButton(String.valueOf(i));
-            btn.addActionListener(digitButtonActionListener);
+            btn.addActionListener(e -> inputArea.setText(inputArea.getText() + btn.getText()));
             bottom.add(btn);
         }
+
+        JButton leftBracket = new JButton("(");
+        leftBracket.addActionListener(e -> inputArea.setText(inputArea.getText() + "("));
+        bottom.add(leftBracket);
+
+        JButton rightBracket = new JButton(")");
+        rightBracket.addActionListener(e -> inputArea.setText(inputArea.getText() + ")"));
+        bottom.add(rightBracket);
+
+        JButton plus = new JButton("+");
+        plus.addActionListener(e -> inputArea.setText(inputArea.getText() + "+"));
+        bottom.add(plus);
+
+        JButton minus = new JButton("-");
+        minus.addActionListener(e -> inputArea.setText(inputArea.getText() + "-"));
+        bottom.add(minus);
+
+        JButton multiply = new JButton("*");
+        multiply.addActionListener(e -> inputArea.setText(inputArea.getText() + "*"));
+        bottom.add(multiply);
+
+        JButton divide = new JButton("/");
+        divide.addActionListener(e -> inputArea.setText(inputArea.getText() + "/"));
+        bottom.add(divide);
 
         JButton clear = new JButton("C");
         clear.addActionListener(e -> inputArea.setText(""));
         bottom.add(clear);
 
+        JButton dot = new JButton(".");
+        dot.addActionListener(e -> inputArea.setText(inputArea.getText() + "."));
+        bottom.add(dot);
+
+        JButton squareRoot = new JButton("sqrt");
+        squareRoot.addActionListener(new SqrtButtonActionListener(inputArea));
+        bottom.add(squareRoot);
+
         JButton calc = new JButton("=");
         calc.addActionListener(new CalcButtonActionListener(inputArea));
         bottom.add(calc);
-
-        JButton plus = new JButton("+");
-        plus.addActionListener(e -> inputArea.setText(inputArea.getText() + "+"));
-        bottom.add(plus);
 
         return bottom;
     }
