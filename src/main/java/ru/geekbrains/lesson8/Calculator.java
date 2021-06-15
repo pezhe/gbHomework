@@ -4,29 +4,56 @@ public class Calculator {
 
     static String calculate(String s) {
         Expression exp = new Expression(s);
-        double result = 0;
+        double result;
         try {
             result = getResult(exp, 0);
-        } catch (UnexpectedNumberFormat e) {
-            return "Unexpected Number Format";
-        } catch (NumberFormatException e) {
-            return "Invalid Expression";
+        } catch (InvalidExpressionException e) {
+            System.out.println("Invalid Expression");
+            return "Error";
         }
+        System.out.println();
         return crop(String.valueOf(result));
     }
 
-    static double getResult(Expression exp, int returnCondition) throws UnexpectedNumberFormat, NumberFormatException {
-        double result = 0;
+    static double getResult(Expression exp, int returnCondition) throws InvalidExpressionException {
+        double result;
         String s = exp.getNext();
         if (s.equals("-")) result = -1 * getResult(exp, 1);
         else if (s.equals("(")) result = getResult(exp, 2);
-        else result = Double.parseDouble(s);
+        else try {
+            result = Double.parseDouble(s);
+            } catch (NumberFormatException e) {
+                throw new InvalidExpressionException();
+            }
         if (returnCondition == 1) return result;
         while (exp.hasNext()) {
+            s = exp.checkNext();
+            if (s.equals("+")) {
+                if (returnCondition == 3) return result;
+                else {
+                    exp.getNext();
+                    result += getResult(exp, 3);
+                    continue;
+                }
+            }
+            if (s.equals("-")) {
+                if (returnCondition == 3) return result;
+                else {
+                    exp.getNext();
+                    result -= getResult(exp, 3);
+                    continue;
+                }
+            }
+            if (s.equals(")")) {
+                if (returnCondition != 3) exp.getNext();
+                return result;
+            }
             s = exp.getNext();
-            if (s.equals(")") && returnCondition == 2) return result;
+            if (s.equals("*")) result *= getResult(exp, 1);
+            if (s.equals("/")) result /= getResult(exp, 1);
+            if (s.equals("(")) throw new InvalidExpressionException();
         }
-        return 0;
+        return result;
     }
 
     static String calculateSqrt(String s) {
@@ -37,11 +64,12 @@ public class Calculator {
         return (s.endsWith(".0")) ? s.substring(0, s.length() - 2) : s;
     }
 
-    static class UnexpectedNumberFormat extends Exception {}
+    static class InvalidExpressionException extends Exception {}
 
     static class Expression {
         private final String text;
-        private int position = 0;
+        private int position = -1;
+        private int brackets = 0;
 
         Expression(String text) {
             this.text = text;
@@ -52,26 +80,38 @@ public class Calculator {
         }
 
         public String checkNext() {
-            return text.substring(position, position + 1);
+            return text.substring(position + 1, position + 2);
         }
 
-        public String getNext() throws UnexpectedNumberFormat {
+        public String getNext() throws InvalidExpressionException {
+            char c;
+            if (hasNext()) c = text.charAt(position + 1);
+            else {
+                System.out.println("Failed getNext request. No characters left");
+                return "";
+            }
             StringBuilder sb = new StringBuilder();
-            int dotsNumber = 0;
-            char c = text.charAt(position);
-            if (!(c <= '9' && c >= '0' || c == '.')) {
+            if (c <= '9' && c >= '0' || c == '.') {
+                int dots = 0;
+                do {
+                    if (c == '.') dots++;
+                    if (dots > 1) throw new InvalidExpressionException();
+                    sb.append(c);
+                    position++;
+                    if (hasNext()) c = text.charAt(position + 1);
+                    else break;
+                } while (c <= '9' && c >= '0' || c == '.');
+            } else {
+                if (c == '(') brackets++;
+                if (c == ')') brackets--;
+                if (brackets < 0) throw new InvalidExpressionException();
                 sb.append(c);
                 position++;
             }
-            while (c <= '9' && c >= '0' || c == '.') {
-                sb.append(c);
-                if (c == '.') dotsNumber++;
-                if (dotsNumber > 1) throw new UnexpectedNumberFormat();
-                if (hasNext()) position++;
-                else break;
-                c = text.charAt(position);
-            }
-            return sb.toString();
+            if (!hasNext() && brackets > 0) throw new InvalidExpressionException();
+            String s = sb.toString();
+            System.out.print(s + "|");
+            return s;
         }
 
     }
