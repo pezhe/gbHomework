@@ -38,7 +38,6 @@ public class Server {
             }).start();
             //Главный цикл, отправка сообщений
             Scanner scanner = new Scanner(System.in);
-            String line;
             while (isConnected.get()) {
                 output.writeUTF(scanner.nextLine());
             }

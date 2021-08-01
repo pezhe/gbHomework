@@ -3,7 +3,6 @@ package ru.geekbrains12.lesson6;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.Socket;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -36,7 +35,6 @@ public class Client {
             }).start();
             //Главный цикл, отправка сообщений
             Scanner scanner = new Scanner(System.in);
-            String line;
             while (isConnected.get()) {
                 output.writeUTF(scanner.nextLine());
             }
