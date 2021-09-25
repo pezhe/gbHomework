@@ -50,13 +50,17 @@ public class Server {
     }
 
     public synchronized void unsubscribe(ClientHandler client) {
-        loggedClients.remove(client);
-        System.out.println(client.getLogin() + " logged out");
+        if (loggedClients.contains(client)) {
+            loggedClients.remove(client);
+            System.out.println(client.getLogin() + " logged out");
+            broadcastMessage(client.getNickname() + " has left the chat");
+        }
     }
 
     public synchronized void subscribe(ClientHandler client) {
         loggedClients.add(client);
         System.out.println(client.getLogin() + " logged in");
+        broadcastMessage(client.getNickname() + " has entered the chat");
     }
 
     public synchronized boolean isLoggedIn(String login) {

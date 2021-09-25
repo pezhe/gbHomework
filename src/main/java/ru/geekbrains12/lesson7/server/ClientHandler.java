@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 public class ClientHandler {
     private final Server server;
@@ -32,8 +33,7 @@ public class ClientHandler {
             this.nickname = "";
             new Thread(() -> {
                 try {
-                    authorize();
-                    readMessages();
+                    if(authorize()) listenMessages();
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
@@ -45,44 +45,68 @@ public class ClientHandler {
         }
     }
 
-    public void authorize() throws IOException {
-        while (true) {
-            sendMessage("Please log in. Type: -a [login] [password]");
-            String str = input.readUTF();
-            if (str.startsWith("-a ")) {
-                String[] credentials = str.split("\\s");
-                if (server.getAuthService().checkCredentials(credentials[1], credentials[2])) {
-                    if (!server.isLoggedIn(credentials[1])) {
-                        sendMessage("You have successfully logged in. Welcome");
-                        login = credentials[1];
-                        nickname = server.getAuthService().getNickname(login);
-                        server.subscribe(this);
-                        server.broadcastMessage(nickname + " has entered the chat");
-                        return;
+    public boolean authorize() throws IOException {
+        socket.setSoTimeout(120000);
+        try {
+            for (int i = 0; i < 3; i++) {
+                sendMessage("Please log in. Type: -a [login] [password]. Number of attempts left: " + (3 - i));
+                String strFromClient = input.readUTF();
+                if (strFromClient.equals("-d")) {
+                    sendMessage("-d");
+                    return false;
+                }
+                if (strFromClient.startsWith("-a ")) {
+                    String[] credentials = strFromClient.split("\\s");
+                    if (credentials.length == 3) {
+                        if (server.getAuthService().checkCredentials(credentials[1], credentials[2])) {
+                            if (!server.isLoggedIn(credentials[1])) {
+                                sendMessage("You have successfully logged in. Welcome");
+                                login = credentials[1];
+                                nickname = server.getAuthService().getNickname(login);
+                                server.subscribe(this);
+                                socket.setSoTimeout(0);
+                                return true;
+                            } else {
+                                sendMessage("User " + credentials[1] + " is already logged in");
+                            }
+                        } else {
+                            sendMessage("Wrong credentials");
+                        }
                     } else {
-                        sendMessage("User " + credentials[1] + " is already logged in");
+                        sendMessage("Unknown command");
                     }
                 } else {
-                    sendMessage("Wrong login/password");
+                    sendMessage("Unknown command");
                 }
             }
+        } catch (SocketTimeoutException e) {
+            sendMessage("Login time exceeded. Disconnected from server");
+            sendMessage("-d");
+            return false;
         }
+        sendMessage("Number of login attempts exceeded. Disconnected from server");
+        sendMessage("-d");
+        return false;
     }
 
-    public void readMessages() throws IOException {
+    public void listenMessages() throws IOException {
         String strFromClient;
         while (true) {
             strFromClient = input.readUTF();
             if (strFromClient.equals("-d")) {
-                output.writeUTF("-d");
+                sendMessage("-d");
                 return;
             }
             if (strFromClient.startsWith("/w ")) { // Обработка персональных сообщений
-                int messagePosition = strFromClient.indexOf(" ",3);
-                String targetNick = strFromClient.substring(3, messagePosition);
-                String message = strFromClient.substring(messagePosition + 1);
-                if (!server.sendTargetedMessage(targetNick, nickname + ": " + message)) {
-                    output.writeUTF("User not found");
+                String[] command = strFromClient.split("\\s");
+                if (command.length >= 3) {
+                    String targetNick = command[1];
+                    String message = strFromClient.substring(strFromClient.indexOf(command[2]));
+                    if (!server.sendTargetedMessage(targetNick, nickname + ": " + message)) {
+                        sendMessage("User not found");
+                    }
+                } else {
+                    sendMessage("Unknown command");
                 }
                 continue;
             }
@@ -100,7 +124,7 @@ public class ClientHandler {
 
     public void closeConnection() {
         server.unsubscribe(this);
-        server.broadcastMessage(nickname + " has left the chat");
+        System.out.println("Closing connection to" + socket);
         try {
             input.close();
         } catch (IOException e) {
