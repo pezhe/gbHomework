@@ -10,7 +10,7 @@ public class AuthService {
         Connection connection = DBConnector.getConnection();
         try {
             PreparedStatement statement =
-                    connection.prepareStatement("SELECT * FROM entry WHERE login = ?");
+                    connection.prepareStatement("SELECT password FROM entry WHERE login = ?");
             statement.setString(1, login);
             ResultSet rs = statement.executeQuery();
             return rs.next() && password.equals(rs.getString("password"));
@@ -25,7 +25,7 @@ public class AuthService {
         Connection connection = DBConnector.getConnection();
         try {
             PreparedStatement statement =
-                    connection.prepareStatement("SELECT * FROM entry WHERE login = ?");
+                    connection.prepareStatement("SELECT nickname FROM entry WHERE login = ?");
             statement.setString(1, login);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) return rs.getString("nickname");
