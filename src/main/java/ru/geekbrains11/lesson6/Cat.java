@@ -1,4 +1,4 @@
-package ru.geekbrains.lesson6;
+package ru.geekbrains11.lesson6;
 
 public class Cat extends Animal {
 

@@ -1,7 +1,7 @@
-package ru.geekbrains.lesson4;
+package ru.geekbrains11.lesson8;
 
 public class Main {
     public static void main(String[] args) {
-        TicTacToe.start();
+        new CalculatorFrame();
     }
 }

@@ -1,4 +1,4 @@
-package ru.geekbrains.lesson3;
+package ru.geekbrains11.lesson3;
 
 import java.util.Random;
 
@@ -38,7 +38,7 @@ public class HomeWorkApp3 {
     /*1. Задать целочисленный массив, состоящий из элементов 0 и 1.
     Например: [ 1, 1, 0, 0, 1, 0, 1, 1, 0, 0 ].
     С помощью цикла и условия заменить 0 на 1, 1 на 0*/
-    static void method1 (Random rn, int len) {
+    static void method1(Random rn, int len) {
         System.out.println("method1");
         int[] arr = new int[len];
         System.out.print("Before: ");
@@ -52,7 +52,7 @@ public class HomeWorkApp3 {
 
     /*2. Задать пустой целочисленный массив длиной 100.
     С помощью цикла заполнить его значениями 1 2 3 4 5 6 7 8 … 100*/
-    static void method2 () {
+    static void method2() {
         System.out.println("\nmethod2");
         int[] arr = new int[100];
         for (int i = 0; i < 100; i++) System.out.print((arr[i] = i + 1) + " ");
@@ -61,11 +61,11 @@ public class HomeWorkApp3 {
 
     /*3. Задать массив [ 1, 5, 3, 2, 11, 4, 5, 2, 4, 8, 9, 1 ]
     пройти по нему циклом, и числа меньшие 6 умножить на 2*/
-    static void method3 () {
+    static void method3() {
         System.out.println("\nmethod3");
         int[] arr = {1, 5, 3, 2, 11, 4, 5, 2, 4, 8, 9, 1};
         for (int i = 0; i < arr.length; i++) {
-            if (arr[i] < 6) arr[i] *=2;
+            if (arr[i] < 6) arr[i] *= 2;
             System.out.print(arr[i] + " ");
         }
         System.out.println();
@@ -76,7 +76,7 @@ public class HomeWorkApp3 {
     можно только одну из диагоналей, если обе сложно).
     Определить элементы одной из диагоналей можно по следующему принципу:
     индексы таких элементов равны, то есть [0][0], [1][1], [2][2], …, [n][n]*/
-    static void method4 (int size) {
+    static void method4(int size) {
         System.out.println("\nmethod4");
         int[][] matrix = new int[size][size];
         for (int i = 0; i < size; i++) matrix[i][i] = matrix[i][size - i - 1] = 1;
@@ -89,15 +89,15 @@ public class HomeWorkApp3 {
 
     /*5. Написать метод, принимающий на вход два аргумента: len и initialValue,
     и возвращающий одномерный массив типа int длиной len, каждая ячейка которого равна initialValue*/
-    static int[] method5 (int len, int initialValue) {
+    static int[] method5(int len, int initialValue) {
         System.out.println("\nmethod5");
-        int [] arr = new int[len];
+        int[] arr = new int[len];
         for (int i = 0; i < len; i++) arr[i] = initialValue;
         return arr;
     }
 
     /*6. * Задать одномерный массив и найти в нем минимальный и максимальный элементы*/
-    static void method6 (Random rn, int len) {
+    static void method6(Random rn, int len) {
         System.out.println("\nmethod6");
         //Initialization
         int[] arr = new int[len];
@@ -116,7 +116,7 @@ public class HomeWorkApp3 {
 
     /*7. ** Написать метод, в который передается не пустой одномерный целочисленный массив,
     метод должен вернуть true, если в массиве есть место, в котором сумма левой и правой части массива равны*/
-    static boolean method7 (int[] arr) {
+    static boolean method7(int[] arr) {
         System.out.println("\nmethod7");
         if (arr.length < 2) return false;
         int centerPoint = arr.length / 2 - 1;
@@ -132,14 +132,12 @@ public class HomeWorkApp3 {
                 rightSum += arr[centerPoint];
                 centerPoint--;
                 moveLeft = true;
-            }
-            else if (rightSum > leftSum) {
+            } else if (rightSum > leftSum) {
                 leftSum += arr[centerPoint + 1];
                 rightSum -= arr[centerPoint + 1];
                 centerPoint++;
                 moveRight = true;
-            }
-            else {
+            } else {
                 for (int i = 0; i < arr.length; i++) {
                     System.out.print(arr[i] + " ");
                     if (i == centerPoint) System.out.print("||| ");
@@ -156,7 +154,7 @@ public class HomeWorkApp3 {
     Элементы смещаются циклично. Для усложнения задачи нельзя пользоваться вспомогательными массивами.
     Примеры: [ 1, 2, 3 ] при n = 1 (на один вправо) -> [ 3, 1, 2 ];
     [ 3, 5, 6, 1] при n = -2 (на два влево) -> [ 6, 1, 3, 5 ].*/
-    static void method8 (int[] arr, int shift) {
+    static void method8(int[] arr, int shift) {
         System.out.println("\nmethod8");
         if (shift > 0) { //Move right
             for (int i = 0; i < shift; i++) {
@@ -168,8 +166,7 @@ public class HomeWorkApp3 {
                     buffer = swap;
                 }
             }
-        }
-        else if (shift < 0) { //Move left
+        } else if (shift < 0) { //Move left
             for (int i = 0; i < -shift; i++) {
                 int buffer = arr[arr.length - 1];
                 arr[arr.length - 1] = arr[0];

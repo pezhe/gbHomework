@@ -1,4 +1,4 @@
-package ru.geekbrains.lesson4;
+package ru.geekbrains11.lesson4;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -110,17 +110,17 @@ public class TicTacToe {
                 }
             }
         }
-        field[bestMoveV][bestMoveH] =  BOT_SIGN;
+        field[bestMoveV][bestMoveH] = BOT_SIGN;
     }
 
-    static int evaluateMove (char[][] field, int v, int h, boolean isBot, int depth) {
+    static int evaluateMove(char[][] field, int v, int h, boolean isBot, int depth) {
         if (++depth > maxDepth) return 0;
         field[v][h] = isBot ? BOT_SIGN : PLAYER_SIGN;
         if (isDraw(field)) {
             field[v][h] = EMPTY_CELL_SYMBOL;
             return 0;
         }
-        if (isWin(field, isBot ?  BOT_SIGN : PLAYER_SIGN)) {
+        if (isWin(field, isBot ? BOT_SIGN : PLAYER_SIGN)) {
             field[v][h] = EMPTY_CELL_SYMBOL;
             return 1;
         }
@@ -141,10 +141,10 @@ public class TicTacToe {
                 }
             }
         }
-        field[bestMoveV][bestMoveH] =  !isBot ?  BOT_SIGN : PLAYER_SIGN;
+        field[bestMoveV][bestMoveH] = !isBot ? BOT_SIGN : PLAYER_SIGN;
         //Best opposite move
 
-        if (isWin(field, !isBot ?  BOT_SIGN : PLAYER_SIGN)) {
+        if (isWin(field, !isBot ? BOT_SIGN : PLAYER_SIGN)) {
             field[v][h] = EMPTY_CELL_SYMBOL;
             field[bestMoveV][bestMoveH] = EMPTY_CELL_SYMBOL;
             return -1;
@@ -179,7 +179,7 @@ public class TicTacToe {
         return value > maxValue;
     }
 
-     static void doPlayerMove(char[][] field) {
+    static void doPlayerMove(char[][] field) {
         int v, h;
         do {
             v = getCoordinate(field, 'v');

@@ -1,4 +1,4 @@
-package ru.geekbrains.lesson5;
+package ru.geekbrains11.lesson5;
 
 public class Employee {
 
@@ -33,15 +33,15 @@ public class Employee {
 
         Employee[] empArr = new Employee[5];
         empArr[0] = new Employee("Чехов Антон Павлович", "разработчик",
-                "chap@hornsandhooves.com","555-55-55", 3000, 22);
+                "chap@hornsandhooves.com", "555-55-55", 3000, 22);
         empArr[1] = new Employee("Толстой Лев Николаевич", "старший разработчик",
-                "tln@hornsandhooves.com","555-55-56", 4000, 27);
+                "tln@hornsandhooves.com", "555-55-56", 4000, 27);
         empArr[2] = new Employee("Достоевский Фёдор Михайлович", "начальник отдела",
-                "dfm@hornsandhooves.com","555-55-57", 5000, 44);
+                "dfm@hornsandhooves.com", "555-55-57", 5000, 44);
         empArr[3] = new Employee("Фет Афанасий Афанасьевич", "руководитель проекта",
-                "faa@hornsandhooves.com","555-55-58", 5000, 35);
+                "faa@hornsandhooves.com", "555-55-58", 5000, 35);
         empArr[4] = new Employee("Пушкин Александр Сергеевич", "вице-президент",
-                "puh@hornsandhooves.com","555-55-55", 3000, 41);
+                "puh@hornsandhooves.com", "555-55-55", 3000, 41);
 
         printEmployeesAboveForty(empArr);
 

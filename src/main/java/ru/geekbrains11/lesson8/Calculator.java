@@ -1,4 +1,4 @@
-package ru.geekbrains.lesson8;
+package ru.geekbrains11.lesson8;
 
 public class Calculator {
 
