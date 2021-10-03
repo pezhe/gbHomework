@@ -110,6 +110,21 @@ public class ClientHandler {
                 }
                 continue;
             }
+            if (strFromClient.startsWith("/n ")) { // Обработка команд смены ника
+                String[] command = strFromClient.split("\\s");
+                if (command.length == 2) {
+                    String newNickname = command[1];
+                    if (server.getAuthService().setNickname(login, newNickname)) {
+                        server.broadcastMessage(nickname + " changed nickname to " + newNickname);
+                        nickname = newNickname;
+                    } else {
+                        sendMessage("Failed to change nickname");
+                    }
+                } else {
+                    sendMessage("Unknown command");
+                }
+                continue;
+            }
             server.broadcastMessage(nickname + ": " + strFromClient);
         }
     }

@@ -1,46 +1,62 @@
 package ru.geekbrains12.lesson7.server;
 
-import java.util.List;
+import ru.geekbrains13.lesson2.DBConnector;
+
+import java.sql.*;
 
 public class AuthService {
 
-    private static class Entry {
-        private final String login;
-        private final String password;
-        private final String nickname;
-
-        public Entry(String login, String password, String nickname) {
-            this.login = login;
-            this.password = password;
-            this.nickname = nickname;
-        }
-    }
-
-    private static final List<Entry> entries;
-
-    static {
-        entries = List.of(
-                new Entry("thanos", "qwerty", "@Life_is_shit@"),
-                new Entry("pquill1980", "123456", "StarLord"),
-                new Entry("i", "am", "Groot"));
-    }
-
     public boolean checkCredentials(String login, String password) {
-        boolean isValid = false;
-        for (Entry entry : entries) {
-            if (entry.login.equals(login) && entry.password.equals(password)) {
-                isValid = true;
-                break;
-            }
+        Connection connection = DBConnector.getConnection();
+        try {
+            PreparedStatement statement =
+                    connection.prepareStatement("SELECT * FROM entry WHERE login = ?");
+            statement.setString(1, login);
+            ResultSet rs = statement.executeQuery();
+            return rs.next() && password.equals(rs.getString("password"));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            DBConnector.close(connection);
         }
-        return isValid;
     }
 
     public String getNickname(String login) {
-        for (Entry entry : entries) {
-            if (entry.login.equals(login)) return entry.nickname;
+        Connection connection = DBConnector.getConnection();
+        try {
+            PreparedStatement statement =
+                    connection.prepareStatement("SELECT * FROM entry WHERE login = ?");
+            statement.setString(1, login);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) return rs.getString("nickname");
+            return "Anonymous";
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            DBConnector.close(connection);
         }
-        return "Anonymous";
+    }
+
+    public boolean setNickname(String login, String newNickname) {
+        Connection connection = DBConnector.getConnection();
+        try {
+            PreparedStatement statement =
+                    connection.prepareStatement("UPDATE entry SET nickname = ? WHERE login = ?");
+            statement.setString(1, newNickname);
+            statement.setString(2, login);
+            if (statement.executeUpdate() == 1) {
+                connection.commit();
+                return true;
+            } else {
+                DBConnector.rollback(connection);
+                return false;
+            }
+        } catch (SQLException e) {
+            DBConnector.rollback(connection);
+            throw new RuntimeException(e);
+        } finally {
+            DBConnector.close(connection);
+        }
     }
 
 }
