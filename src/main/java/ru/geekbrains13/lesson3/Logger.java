@@ -17,8 +17,10 @@ public class Logger {
                 for (long i = raf.length() - 1; i >= 0; i--) {
                     raf.seek(i);
                     int b = raf.readByte();
-                    if (b == '\n') count++;
-                    if (count == lines + 1) break;
+                    if (b == '\n') {
+                        count++;
+                        if (count == lines + 1) break;
+                    }
                     sb.append((char)b);
                 }
                 return sb.reverse().toString();
