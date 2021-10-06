@@ -62,6 +62,7 @@ public class ClientHandler {
                             if (!server.isLoggedIn(credentials[1])) {
                                 sendMessage("You have successfully logged in. Welcome");
                                 login = credentials[1];
+                                sendMessage("-login " + login); // Передаём логин клиенту
                                 nickname = server.getAuthService().getNickname(login);
                                 server.subscribe(this);
                                 socket.setSoTimeout(0);

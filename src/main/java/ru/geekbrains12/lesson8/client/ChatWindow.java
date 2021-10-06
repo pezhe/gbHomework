@@ -5,8 +5,6 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.function.Consumer;
 
 public class ChatWindow extends JFrame {
@@ -17,7 +15,6 @@ public class ChatWindow extends JFrame {
     private final Consumer<String> outboundMessageConsumer;
     private final ActionListener sendListener;
     private final JButton sendButton;
-    private final SimpleDateFormat sdf = new SimpleDateFormat("HH.mm.ss");
 
     public ChatWindow(Consumer<String> outboundMessageConsumer) {
         //Связь окна с клиентским приложением
@@ -71,8 +68,7 @@ public class ChatWindow extends JFrame {
 
     private Consumer<String> createInboundMessageConsumer() {
         return inboundMessage -> {
-            String timeStamp = sdf.format(new Date());
-            chatArea.append("[" + timeStamp + "] " + inboundMessage + "\n");
+            chatArea.append(inboundMessage);
             chatArea.setCaretPosition(chatArea.getDocument().getLength());
         };
     }
