@@ -5,6 +5,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ClientHandler {
     private final Server server;
@@ -31,15 +33,16 @@ public class ClientHandler {
             this.output = new DataOutputStream(socket.getOutputStream());
             this.login = "";
             this.nickname = "";
-            new Thread(() -> {
+            ExecutorService ctp = Executors.newCachedThreadPool();
+            ctp.execute(() -> {
                 try {
-                    if(authorize()) listenMessages();
+                    if (authorize()) listenMessages();
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
                     closeConnection();
                 }
-            }).start();
+            });
         } catch (IOException e) {
             throw new RuntimeException("Error during establishing client connection", e);
         }
