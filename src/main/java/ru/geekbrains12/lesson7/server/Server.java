@@ -7,6 +7,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.*;
 
 public class Server {
 
@@ -15,7 +16,8 @@ public class Server {
     private ServerSocket server;
 
     public Server(int port) {
-        Thread clientConnection = new Thread(() -> {
+        ExecutorService ste = Executors.newSingleThreadExecutor();
+        ste.execute(() -> {
             try {
                 server = new ServerSocket(port);
                 while (true) {
@@ -30,14 +32,13 @@ public class Server {
                 e.printStackTrace();
             }
         });
-        clientConnection.start(); //Старт треда, подключающего клиентов
         Scanner scanner = new Scanner(System.in);
         scanner.nextLine(); //Ожидание нажатия ENTER
         //Отключение сервера
         try {
             server.close();
-            clientConnection.join(); //Ожидание завершения треда, подключающего клиентов
-        } catch (InterruptedException | IOException e) {
+            ste.shutdown();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         broadcastMessage("Server termination. All connections are to be closed");
