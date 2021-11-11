@@ -18,7 +18,8 @@ public class TreeApp {
             System.out.println("Balanced: " + balanced);
             if (balanced) balancedAmount++;
         }
-        System.out.println(balancedAmount / 20 * 100 + "% are balanced");
+        double balancedPart = balancedAmount / 20d * 100d;
+        System.out.println(balancedPart + "% are balanced");
 
     }
 

@@ -1,5 +1,7 @@
 package ru.gbalg.lesson6;
 
+import ru.gbalg.lesson3.MyStack;
+
 public class MyBinaryTree {
 
     static class Node {
@@ -52,15 +54,27 @@ public class MyBinaryTree {
     }
 
     public boolean isBalanced() {
-        explore(root);
-        return true;
+        MyStack<Integer> depths = new MyStack<>();
+        explore(root, 0, depths);
+        int max = 0;
+        int min = maxDepth;
+        while (!depths.isEmpty()) {
+            int depth = depths.pop();
+            max = Math.max(depth, max);
+            min = Math.min(depth, min);
+        }
+        System.out.print("(" + min + "," + max + ") ");
+        return (max - min) <= 1;
     }
 
-    private void explore(Node rootNode) {
+    private void explore(Node rootNode, int depth, MyStack<Integer> depths) {
         if (rootNode != null) {
-            explore(rootNode.leftChild);
+            if (rootNode.leftChild == null || rootNode.rightChild == null)
+                depths.push(depth);
+            depth++;
+            explore(rootNode.leftChild, depth, depths);
             rootNode.display();
-            explore(rootNode.rightChild);
+            explore(rootNode.rightChild, depth, depths);
         }
     }
 
