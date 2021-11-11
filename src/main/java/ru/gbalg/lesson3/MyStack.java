@@ -1,52 +1,53 @@
 package ru.gbalg.lesson3;
 
-import java.lang.reflect.Array;
+import java.util.Arrays;
 
 // Задание № 3* - Саморасширяющийся обобщенный стек
 public class MyStack<T> {
-    private static final int DEFAULT_SIZE = 10; // Исходный размер по умолчанию
+    private static final int DEFAULT_SIZE = 10;
     private int maxSize;
     private T[] stack;
     private int top;
-    private final Class<T> cl;
 
     @SuppressWarnings("unchecked")
-    public MyStack(Class<T> cl, int size){ // Не знаю как можно создать обобщенный массив без рефлексии
-        this.cl = cl;
+    public MyStack(int size){
         maxSize = size;
-        stack = (T[]) Array.newInstance(cl, maxSize);
+        stack = (T[]) new Object[maxSize];
         top = -1;
     }
 
 // Конструктор с исходным размером по умолчанию
-    public MyStack(Class<T> cl) {
-        this(cl, DEFAULT_SIZE);
+    public MyStack() {
+        this(DEFAULT_SIZE);
     }
 
 // Увеличение размера стека
-    @SuppressWarnings("unchecked")
     private void expand() {
-        T[] temp = (T[]) Array.newInstance(cl, maxSize * 2);
-        System.arraycopy(stack, 0, temp, 0, maxSize);
-        stack = temp;
+        stack = Arrays.copyOf(stack, maxSize * 2);
         maxSize = stack.length;
     }
 
     public void push(T i) {
-        if (top == maxSize-1) this.expand(); // Проверка на переполнение при добавлении элемента
+        if (top == maxSize - 1) this.expand();
         stack[++top] = i;
     }
 
-    public T pop(){
-        return this.stack[top--];
+    public T pop() {
+        T temp = this.stack[top];
+        this.stack[top--] = null;
+        return temp;
     }
 
-    public T peek(){
+    public T peek() {
         return this.stack[top];
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return (top == -1);
+    }
+
+    public boolean isFull() {
+        return (this.top == this.maxSize-1);
     }
 
 }

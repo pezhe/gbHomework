@@ -6,7 +6,7 @@ public class ReversePrinter {
 // Можно сделать быстро с использовнием StringBuilder reverse(), но раз урок про стеки и прочее...
     public static void printReverse(String line) {
         char[] ch = line.toCharArray();
-        MyStack<Character> ms = new MyStack<>(Character.class);
+        MyStack<Character> ms = new MyStack<>();
         for (char c : ch) ms.push(c);
         while (!ms.isEmpty()) {
             System.out.print(ms.pop());
