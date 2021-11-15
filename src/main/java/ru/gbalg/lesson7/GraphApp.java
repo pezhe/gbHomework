@@ -1,17 +1,15 @@
 package ru.gbalg.lesson7;
 
-import java.util.Arrays;
-
 public class GraphApp {
     public static void main(String[] args) {
-        MyGraph graph = new MyGraph();
-        // Создание узлов 'A' - 'J'
+        MyGraph graph = new MyGraph(10);
+        // Создание узлов A - J
         char c = 'A';
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < graph.getMaxSize(); i++) {
             graph.addNode(c);
             c++;
         }
-        /*
+        /* Соединение
         A-B-C-D
         |   | |
         E   F G
@@ -30,6 +28,6 @@ public class GraphApp {
         graph.addEdge('G', 'J');
         graph.addEdge('H', 'I');
         // Вывод кратчайшего пути
-        System.out.println(Arrays.toString(graph.getShortestPath('A', 'J')));
+        System.out.println(graph.getShortestPath('A', 'J'));
     }
 }
