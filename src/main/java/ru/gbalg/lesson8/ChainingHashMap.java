@@ -1,12 +1,15 @@
 package ru.gbalg.lesson8;
 
 import java.util.LinkedList;
+import java.util.Objects;
 
 public class ChainingHashMap<K, V> {
-    private int capacity;
+    private final int capacity;
     private int size;
-    private LinkedList<Node>[] st;
+    private final LinkedList<Node>[] st;
 
+    @SuppressWarnings("unchecked")
+    // Type safety provided inside 'put' method. Only 'Node' instances are inserted to list
     public ChainingHashMap(int capacity) {
         if (capacity <= 0) {
             throw new IllegalArgumentException();
@@ -36,7 +39,7 @@ public class ChainingHashMap<K, V> {
         return size == 0;
     }
 
-    private int hash(K key) {
+    private int getHash(K key) {
         return (key.hashCode() & 0x7fffffff) % capacity;
     }
 
@@ -44,31 +47,34 @@ public class ChainingHashMap<K, V> {
         return get(key) != null;
     }
 
-    public void checkKeyNotNull(K key) {
-        if (key == null) {
-            throw new IllegalArgumentException();
-        }
-    }
-
     public void put(K key, V value) {
-        checkKeyNotNull(key);
-        int i = hash(key);
-        for (Node node : st[i]) {
+        int hash = getHash(Objects.requireNonNull(key));
+        for (Node node : st[hash]) {
             if (key.equals(node.key)) {
                 node.value = value;
                 return;
             }
         }
-        st[i].addLast(new Node(key, value));
+        st[hash].addLast(new Node(key, value));
         size++;
     }
 
     public V get(K key) {
-        checkKeyNotNull(key);
-        int i = hash(key);
-        for (Node node : st[i]) {
+        int hash = getHash(Objects.requireNonNull(key));
+        for (Node node : st[hash]) {
             if (key.equals(node.key)) {
                 return node.value;
+            }
+        }
+        return null;
+    }
+
+    public V remove(K key) {
+        int hash = getHash(Objects.requireNonNull(key));
+        for (int i = 0; i < st[hash].size(); i++) {
+            if (key.equals(st[hash].get(i).key)) {
+                size--;
+                return st[hash].remove(i).value;
             }
         }
         return null;
@@ -79,8 +85,7 @@ public class ChainingHashMap<K, V> {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < capacity; i++) {
             for (Node node : st[i]) {
-//                sb.append(node.key).append(" = ").append(node.value).append(" ");
-                sb.append(node.key).append(" ");
+                sb.append(node.key).append(" = ").append(node.value).append(" ");
             }
             sb.append(System.lineSeparator());
         }
