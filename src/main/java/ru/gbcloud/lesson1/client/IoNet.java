@@ -1,47 +1,50 @@
 package ru.gbcloud.lesson1.client;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 
 public class IoNet implements Closeable {
 
     private final Callback callback;
     private final Socket socket;
-    private final InputStream is;
-    private final OutputStream os;
-    private final byte[] buf;
+    private final DataInputStream is;
+    private final DataOutputStream os;
 
     public IoNet(Callback callback,
                  Socket socket) throws IOException {
         this.callback = callback;
         this.socket = socket;
-        is = socket.getInputStream();
-        os = socket.getOutputStream();
-        buf = new byte[8192];
+        is = new DataInputStream(socket.getInputStream());
+        os = new DataOutputStream(socket.getOutputStream());
         Thread readThread = new Thread(this::readMessages);
         readThread.setDaemon(true);
         readThread.start();
     }
 
-    public void sendMsg(String msg) throws IOException {
-        os.write(msg.getBytes(StandardCharsets.UTF_8));
-        os.flush();
-    }
-
     private void readMessages() {
         try {
             while (true) {
-                int read = is.read(buf);
-                String msg = new String(buf, 0, read).trim();
+                String msg = is.readUTF();
                 callback.onReceive(msg);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void writeUtf(String msg) throws IOException {
+        os.writeUTF(msg);
+        os.flush();
+    }
+
+    public void writeLong(long size) throws IOException {
+        os.writeLong(size);
+        os.flush();
+    }
+
+    public void writeBytes(byte[] bytes, int off, int cnt) throws IOException {
+        os.write(bytes, off, cnt);
+        os.flush();
     }
 
     @Override
